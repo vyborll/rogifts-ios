@@ -3,9 +3,26 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
 export type RootStackParamList = {
+  Auth: undefined;
+  Login: undefined;
+  Register: undefined;
   Root: undefined;
   NotFound: undefined;
+};
+
+export type AuthStackParamList = {
+  Auth: undefined;
+  Login: undefined;
+  Register: undefined;
+};
+
+export type AuthNavProps<T extends keyof AuthStackParamList> = {
+  navigation: StackNavigationProp<AuthStackParamList, T>;
+  route: RouteProp<AuthStackParamList, T>;
 };
 
 export type BottomTabParamList = {
