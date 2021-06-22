@@ -12,8 +12,11 @@ export default {
   dark: {
     text: 'rgba(255, 255, 255, 0.9)',
     background: 'rgba(32, 33, 36, 1)',
+    darkBackground: 'rgba(0, 0, 0, 0.2)',
     tint: tintColorDark,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
+    green: 'rgb(16, 185, 129)',
+    darkGreen: 'rgba(16, 185, 129, 0.6)',
   },
 };

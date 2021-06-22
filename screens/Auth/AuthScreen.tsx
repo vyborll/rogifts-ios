@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   brand: {
-    fontSize: 38,
+    fontSize: 50,
     fontWeight: 'bold',
     textTransform: 'uppercase',
   },

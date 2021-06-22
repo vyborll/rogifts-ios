@@ -10,6 +10,9 @@ import { ColorSchemeName } from 'react-native';
 
 import AuthScreen from '../screens/Auth/AuthScreen';
 import LoginScreen from '../screens/Auth/LoginScreen';
+import RegisterScreen from '../screens/Auth/RegisterScreen';
+
+import HomeScreen from '../screens/HomeScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import { RootStackParamList } from '../types';
@@ -29,12 +32,13 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const isAuth = false;
+  const isAuth = true;
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isAuth ? (
         <>
+          {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
           <Stack.Screen name="Root" component={BottomTabNavigator} />
           <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
         </>
@@ -42,6 +46,7 @@ function RootNavigator() {
         <>
           <Stack.Screen name="Auth" component={AuthScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
         </>
       )}
     </Stack.Navigator>

@@ -10,6 +10,7 @@ export type RootStackParamList = {
   Auth: undefined;
   Login: undefined;
   Register: undefined;
+  Home: undefined;
   Root: undefined;
   NotFound: undefined;
 };
@@ -26,8 +27,18 @@ export type AuthNavProps<T extends keyof AuthStackParamList> = {
 };
 
 export type BottomTabParamList = {
+  Home: undefined;
+  Earn: undefined;
   TabOne: undefined;
   TabTwo: undefined;
+};
+
+export type HomeParamList = {
+  Home: undefined;
+};
+
+export type EarnParamList = {
+  Earn: undefined;
 };
 
 export type TabOneParamList = {
