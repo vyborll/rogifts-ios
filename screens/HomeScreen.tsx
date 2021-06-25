@@ -69,12 +69,13 @@ const styles = StyleSheet.create({
   },
   cards: {
     marginTop: '10%',
+    paddingBottom: 50,
   },
   card: {
     width: '100%',
     backgroundColor: Colors.dark.darkBackground,
     borderRadius: 4,
-    padding: 10,
+    padding: 20,
     marginBottom: 20,
   },
   cardHeader: {

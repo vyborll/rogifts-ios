@@ -5,19 +5,20 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, StackNavigationOptions } from '@react-navigation/stack';
 import * as React from 'react';
 
 import { HomeIcon, CurrencyDollarIcon, CogIcon } from 'react-native-heroicons/solid';
 
 import HomeScreen from '../screens/HomeScreen';
 import EarnScreen from '../screens/EarnScreen';
+import SettingScreen from '../screens/SettingScreen';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
-import { BottomTabParamList, HomeParamList, EarnParamList, TabOneParamList, TabTwoParamList } from '../types';
+import { BottomTabParamList, HomeParamList, EarnParamList, TabOneParamList, TabTwoParamList, SettingParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -56,6 +57,14 @@ export default function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <CurrencyDollarIcon size={28} color={color} />,
         }}
       />
+      <BottomTab.Screen
+        name="Setting"
+        component={SettingNavigator}
+        options={{
+          tabBarLabel: 'Setting',
+          tabBarIcon: ({ color }) => <CogIcon size={28} color={color} />,
+        }}
+      />
       {/* <BottomTab.Screen
         name="TabOne"
         component={TabOneNavigator}
@@ -82,11 +91,15 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
+const headerOptions: StackNavigationOptions = {
+  headerShown: false,
+};
+
 const HomeStack = createStackNavigator<HomeParamList>();
 
 function HomeNavigator() {
   return (
-    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+    <HomeStack.Navigator screenOptions={headerOptions}>
       <HomeStack.Screen name="Home" component={HomeScreen} />
     </HomeStack.Navigator>
   );
@@ -96,9 +109,19 @@ const EarnStack = createStackNavigator<EarnParamList>();
 
 function EarnNavigator() {
   return (
-    <EarnStack.Navigator>
+    <EarnStack.Navigator screenOptions={headerOptions}>
       <EarnStack.Screen name="Earn" component={EarnScreen} />
     </EarnStack.Navigator>
+  );
+}
+
+const SettingStack = createStackNavigator<SettingParamList>();
+
+function SettingNavigator() {
+  return (
+    <SettingStack.Navigator screenOptions={headerOptions}>
+      <SettingStack.Screen name="Setting" component={SettingScreen} />
+    </SettingStack.Navigator>
   );
 }
 
