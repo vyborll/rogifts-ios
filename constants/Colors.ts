@@ -17,7 +17,9 @@ export default {
     tint: tintColorDark,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
+    lightGreen: 'rgb(167, 243, 208)',
     green: 'rgb(16, 185, 129)',
     darkGreen: 'rgba(16, 185, 129, 0.6)',
+    lightRed: 'rgb(254, 202, 202)',
   },
 };

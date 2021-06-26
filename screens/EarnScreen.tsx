@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
+    color: Colors.dark.green,
     fontSize: 28,
     fontWeight: 'bold',
     textTransform: 'uppercase',
