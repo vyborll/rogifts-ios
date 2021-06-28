@@ -1,29 +1,37 @@
 import * as React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CogIcon, BookOpenIcon } from 'react-native-heroicons/solid';
 
 import Colors from '../constants/Colors';
 import { SafeArea, View, Text, TouchableOpacity } from '../components/Theme';
+import { SettingNavProps } from '../types';
 import { RootState } from '../store';
+import { logout } from '../store/reducers/user';
 
-const actions: { title: string; icon: React.ReactElement }[] = [
-  {
-    title: 'Edit Settings',
-    icon: <CogIcon color={Colors.dark.lightGreen} />,
-  },
-  {
-    title: 'Rules',
-    icon: <BookOpenIcon color={Colors.dark.lightGreen} />,
-  },
-  {
-    title: 'Logout',
-    icon: <CogIcon color={Colors.dark.lightRed} />,
-  },
-];
-
-export default function SettingScreen() {
+export default function SettingScreen({ navigation }: SettingNavProps<'Setting'>) {
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
+
+  const actions: { title: string; icon: React.ReactElement; onPress?: () => void }[] = [
+    {
+      title: 'Edit Settings',
+      icon: <CogIcon color={Colors.dark.lightGreen} />,
+      onPress: () => navigation.push('EditSettings'),
+    },
+    {
+      title: 'Rules',
+      icon: <BookOpenIcon color={Colors.dark.lightGreen} />,
+      onPress: () => navigation.push('Rules'),
+    },
+    {
+      title: 'Logout',
+      icon: <CogIcon color={Colors.dark.lightRed} />,
+      onPress: () => {
+        dispatch(logout());
+      },
+    },
+  ];
 
   return (
     <SafeArea>
@@ -57,7 +65,7 @@ export default function SettingScreen() {
 
         <ScrollView style={{ height: '100%' }} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
           {actions.map((action, index) => (
-            <TouchableOpacity key={index} style={styles.action}>
+            <TouchableOpacity key={index} style={styles.action} onPress={action.onPress}>
               <Text style={action.title === 'Logout' ? { ...styles.actionTitle, color: Colors.dark.lightRed } : styles.actionTitle}>
                 {action.title}
               </Text>

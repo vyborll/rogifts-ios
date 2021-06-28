@@ -5,10 +5,11 @@ import { UserGroupIcon, ClockIcon } from 'react-native-heroicons/solid';
 
 import Colors from '../constants/Colors';
 import { SafeArea, Text, View, TouchableOpacity, MainStyles } from '../components/Theme';
+import { HomeNavProps } from '../types';
 // @ts-ignore
 import robloxIcon from '../assets/images/roblox-icon.png';
 
-function Card({ title }: { title: string }) {
+function Card({ title, onPress }: { title: string; onPress: () => void }) {
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -26,7 +27,7 @@ function Card({ title }: { title: string }) {
         <Image source={robloxIcon} style={{ height: 60, width: '70%' }} />
       </View>
       <View style={styles.cardFooter}>
-        <TouchableOpacity style={MainStyles.button} backgroundColor="green">
+        <TouchableOpacity style={MainStyles.button} backgroundColor="green" onPress={onPress}>
           <Text style={MainStyles.buttonText}>Enter</Text>
         </TouchableOpacity>
       </View>
@@ -34,7 +35,7 @@ function Card({ title }: { title: string }) {
   );
 }
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }: HomeNavProps<'Home'>) {
   return (
     <SafeArea>
       <ScrollView style={styles.body} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
@@ -42,10 +43,15 @@ export default function HomeScreen() {
           <Text style={styles.title}>Giveaways</Text>
         </View>
         <View style={styles.cards}>
-          <Card title="$5 Roblox Gift Card" />
-          <Card title="$5 Roblox Gift Card" />
-          <Card title="$5 Roblox Gift Card" />
-          <Card title="$5 Roblox Gift Card" />
+          <Card
+            title="$5 Roblox Gift Card"
+            onPress={() => {
+              navigation.navigate('Giveaway', {
+                id: 'ads',
+                name: 'asd',
+              });
+            }}
+          />
         </View>
       </ScrollView>
     </SafeArea>

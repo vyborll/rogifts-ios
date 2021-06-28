@@ -11,8 +11,11 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Home: undefined;
+  Giveaway: undefined;
   Earn: undefined;
   Setting: undefined;
+  EditSettings: undefined;
+  Rules: undefined;
   Root: undefined;
   NotFound: undefined;
 };
@@ -32,12 +35,14 @@ export type BottomTabParamList = {
   Home: undefined;
   Earn: undefined;
   Setting: undefined;
-  TabOne: undefined;
-  TabTwo: undefined;
 };
 
 export type HomeParamList = {
   Home: undefined;
+  Giveaway: {
+    id: string;
+    name: string;
+  };
 };
 
 export type EarnParamList = {
@@ -46,6 +51,8 @@ export type EarnParamList = {
 
 export type SettingParamList = {
   Setting: undefined;
+  EditSettings: undefined;
+  Rules: undefined;
 };
 
 export type TabOneParamList = {
@@ -54,4 +61,19 @@ export type TabOneParamList = {
 
 export type TabTwoParamList = {
   TabTwoScreen: undefined;
+};
+
+export type HomeNavProps<T extends keyof HomeParamList> = {
+  navigation: StackNavigationProp<HomeParamList, T>;
+  route: RouteProp<HomeParamList, T>;
+};
+
+export type EarnNavProps<T extends keyof EarnParamList> = {
+  navigation: StackNavigationProp<EarnParamList, T>;
+  route: RouteProp<EarnParamList, T>;
+};
+
+export type SettingNavProps<T extends keyof SettingParamList> = {
+  navigation: StackNavigationProp<SettingParamList, T>;
+  route: RouteProp<SettingParamList, T>;
 };

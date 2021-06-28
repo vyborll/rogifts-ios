@@ -9,25 +9,30 @@ interface UserData {
   id: string;
   name: string;
   email: string;
+  balance: number;
 }
 
 const initialState: UserState = {
   loading: true,
-  loggedIn: false,
+  loggedIn: true,
   id: '1234-5678-9101',
   name: 'test',
   email: 'test@gmail.com',
+  balance: 10,
 };
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUser(state, action: PayloadAction<UserData>) {
-      state = { ...state, loading: false, ...action.payload };
+    setUser(state, action: PayloadAction<Partial<UserData>>) {
+      return (state = { ...state, loading: false, ...action.payload });
+    },
+    logout(state) {
+      return (state = { ...initialState, loading: false, loggedIn: false });
     },
   },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, logout } = userSlice.actions;
 export default userSlice.reducer;

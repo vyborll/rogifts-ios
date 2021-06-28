@@ -7,17 +7,21 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
+import { useSelector } from 'react-redux';
 
 import AuthScreen from '../screens/Auth/AuthScreen';
 import LoginScreen from '../screens/Auth/LoginScreen';
 import RegisterScreen from '../screens/Auth/RegisterScreen';
-
-import HomeScreen from '../screens/HomeScreen';
+import Giveaway from '../screens/Giveaway';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
+import EditSettingsScreen from '../screens/Settings/EditSettingsScreen';
+import RulesScreen from '../screens/Settings/RulesScreen';
 import { RootStackParamList } from '../types';
 import BottomTabNavigator from './BottomTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
+
+import { RootState } from '../store/index';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -32,14 +36,19 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const isAuth = true;
+  const user = useSelector((state: RootState) => state.user);
+
+  console.log(user.loggedIn);
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {isAuth ? (
+      {user.loggedIn ? (
         <>
           {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
           <Stack.Screen name="Root" component={BottomTabNavigator} />
+          <Stack.Screen name="Giveaway" component={Giveaway} />
+          <Stack.Screen name="EditSettings" component={EditSettingsScreen} />
+          <Stack.Screen name="Rules" component={RulesScreen} />
           <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
         </>
       ) : (

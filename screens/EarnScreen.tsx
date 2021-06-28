@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
 
 import Colors from '../constants/Colors';
 import { SafeArea, Text, View, TouchableOpacity } from '../components/Theme';
+import { RootState } from '../store/index';
 
 interface Task {
   title: string;
@@ -19,6 +21,8 @@ function EarnCard({ title, reward, onPress }: Task & { onPress?: () => void }) {
 }
 
 export default function EarnScreen() {
+  const user = useSelector((state: RootState) => state.user);
+
   const tasks: Task[] = [
     {
       title: 'Daily Bonus',
@@ -39,7 +43,7 @@ export default function EarnScreen() {
 
         <View style={styles.balance}>
           <Text style={styles.balanceText}>Balance:</Text>
-          <Text style={styles.balanceText}>50 Points</Text>
+          <Text style={styles.balanceText}>{user.balance.toLocaleString()} Points</Text>
         </View>
 
         <View style={styles.actions}>

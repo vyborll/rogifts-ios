@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
 import {
+  StyleSheet,
+  Keyboard,
   SafeAreaView as DefaultSafeArea,
   View as DefaultView,
   Text as DefaultText,
   TextInput as DefaultTextInput,
   TouchableOpacity as DefaultTouchableOpacity,
+  TouchableWithoutFeedback as DefaultTouchableWithout,
 } from 'react-native';
 
 import Colors from '../constants/Colors';
@@ -86,6 +88,19 @@ export const MainStyles = StyleSheet.create({
     padding: 8,
   },
 });
+
+export function DismissKeyboard({ children }: { children?: React.ReactNode }) {
+  return (
+    <DefaultTouchableWithout
+      style={{ flex: 1 }}
+      onPress={() => {
+        Keyboard.dismiss();
+      }}
+    >
+      {children}
+    </DefaultTouchableWithout>
+  );
+}
 
 export const AuthStyles = StyleSheet.create({
   header: {
