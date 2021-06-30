@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TextInput, StyleSheet } from 'react-native';
+import { Alert, TextInput, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChevronLeftIcon } from 'react-native-heroicons/solid';
 import { useForm, Controller } from 'react-hook-form';
@@ -7,10 +7,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { SafeArea, View, Text, InputStyle, TouchableOpacity, DismissKeyboard } from '../../components/Theme';
 import { SettingNavProps } from '../../types';
 import { RootState } from '../../store';
+import Api from '../../utils/api';
+import { setUser } from '../../store/reducers/user';
 
 export default function EditSettingsScreen({ navigation }: SettingNavProps<'EditSettings'>) {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
+  const [loading, setLoading] = React.useState(false);
 
   const {
     control,
@@ -18,8 +21,22 @@ export default function EditSettingsScreen({ navigation }: SettingNavProps<'Edit
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data: { name: string }) => {
-    console.log(data);
+  const onSubmit = async (data: { name: string }) => {
+    try {
+      if (loading) return;
+
+      setLoading(true);
+
+      const response = await Api.post('/user/name', { ...data });
+      dispatch(setUser(response.data.user));
+      Alert.alert('Success', 'Name has been updated');
+      return;
+    } catch (err) {
+      Alert.alert('Error', err.response.data.message ?? 'Server Error');
+      console.warn(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,7 +58,7 @@ export default function EditSettingsScreen({ navigation }: SettingNavProps<'Edit
           </View>
 
           <View style={styles.profile}>
-            <View>
+            <View style={{ marginBottom: 20 }}>
               <Text style={{ fontSize: 18, marginBottom: 10 }}>Name</Text>
               <Controller
                 control={control}
@@ -50,7 +67,7 @@ export default function EditSettingsScreen({ navigation }: SettingNavProps<'Edit
                 )}
                 name="name"
                 rules={{ required: true, minLength: 1, maxLength: 20 }}
-                defaultValue={''}
+                defaultValue={user.name ?? ''}
               />
               {errors.name?.type === 'required' && (
                 <Text textColor="lightRed" style={styles.errorText}>
@@ -69,13 +86,12 @@ export default function EditSettingsScreen({ navigation }: SettingNavProps<'Edit
               )}
             </View>
 
-            <TouchableOpacity
-              style={styles.saveButton}
-              backgroundColor="green"
-              onPress={() => {
-                console.log('saved');
-              }}
-            >
+            <View style={{ marginBottom: 10 }}>
+              <Text style={{ fontSize: 18, marginBottom: 10 }}>Email</Text>
+              <TextInput style={{ ...InputStyle, opacity: 0.5 }} value={user.email} editable={false} />
+            </View>
+
+            <TouchableOpacity style={styles.saveButton} backgroundColor="green" onPress={handleSubmit(onSubmit)}>
               <Text style={styles.saveText}>Save</Text>
             </TouchableOpacity>
           </View>

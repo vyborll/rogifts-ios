@@ -1,27 +1,33 @@
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import * as linking from 'expo-linking';
+import { AdMobRewarded } from 'expo-ads-admob';
 
 import Colors from '../constants/Colors';
 import { SafeArea, Text, View, TouchableOpacity } from '../components/Theme';
 import { RootState } from '../store/index';
+import Api from '../utils/api';
+import { setUser } from '../store/reducers/user';
 
 interface Task {
   title: string;
   reward: number;
 }
 
-function EarnCard({ title, reward, onPress }: Task & { onPress?: () => void }) {
+function EarnCard({ title, show = true, reward, onPress }: Task & { show?: boolean; onPress?: () => void }) {
   return (
     <TouchableOpacity style={styles.action} onPress={onPress}>
       <Text style={styles.actionTitle}>{title}</Text>
-      <Text style={styles.actionTitle}>+{reward}</Text>
+      {show ? <Text style={styles.actionTitle}>+{reward}</Text> : null}
     </TouchableOpacity>
   );
 }
 
 export default function EarnScreen() {
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
+  const [playing, setPlaying] = React.useState(false);
 
   const tasks: Task[] = [
     {
@@ -33,6 +39,29 @@ export default function EarnScreen() {
       reward: 1,
     },
   ];
+
+  const playVideoAd = async () => {
+    try {
+      if (playing) return;
+
+      setPlaying(true);
+      await AdMobRewarded.setAdUnitID('ca-app-pub-3194343103010036/8435273422');
+      await AdMobRewarded.requestAdAsync({
+        servePersonalizedAds: true,
+        additionalRequestParams: {
+          user_id: user.id,
+        },
+      });
+
+      await AdMobRewarded.showAdAsync();
+    } catch (err) {
+      console.warn(err);
+    } finally {
+      setTimeout(() => {
+        setPlaying(false);
+      }, 10000);
+    }
+  };
 
   return (
     <SafeArea>
@@ -48,8 +77,21 @@ export default function EarnScreen() {
 
         <View style={styles.actions}>
           {tasks.map((task, index) => (
-            <EarnCard key={index} {...task} />
+            <EarnCard key={index} {...task} onPress={playVideoAd} />
           ))}
+          <EarnCard
+            title="Join Discord"
+            show={!user.discord}
+            reward={1}
+            onPress={async () => {
+              linking.openURL('https://discord.gg/dpWQNpnUPd');
+
+              if (!user.discord) {
+                const response = await Api.post('/user/claim');
+                dispatch(setUser(response.data.user));
+              }
+            }}
+          />
         </View>
       </View>
     </SafeArea>

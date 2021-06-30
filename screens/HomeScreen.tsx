@@ -1,5 +1,8 @@
 import * as React from 'react';
 import { Image, StyleSheet, ScrollView } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import moment from 'moment-timezone';
 
 import { UserGroupIcon, ClockIcon } from 'react-native-heroicons/solid';
 
@@ -8,22 +11,26 @@ import { SafeArea, Text, View, TouchableOpacity, MainStyles } from '../component
 import { HomeNavProps } from '../types';
 // @ts-ignore
 import robloxIcon from '../assets/images/roblox-icon.png';
+import { RootState } from '../store';
+import { GiveawayData, setTabHeight } from '../store/reducers/giveaway';
 
-function Card({ title, onPress }: { title: string; onPress: () => void }) {
+function Card({ name, usersEntered, maxEntries, endAt, onPress }: GiveawayData & { onPress: () => void }) {
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <View style={styles.cardHeaderStatus}>
           <ClockIcon color="#fff" style={{ marginRight: 5 }} size={20} />
-          <Text>20h 19d 21s</Text>
+          <Text>{moment(endAt).fromNow()}</Text>
         </View>
         <View style={styles.cardHeaderStatus}>
           <UserGroupIcon color="#fff" style={{ marginRight: 5 }} size={20} />
-          <Text>250 / 5000</Text>
+          <Text>
+            {usersEntered} / {maxEntries}
+          </Text>
         </View>
       </View>
       <View style={styles.cardBody}>
-        <Text style={styles.cardTitle}>{title}</Text>
+        <Text style={styles.cardTitle}>{name}</Text>
         <Image source={robloxIcon} style={{ height: 60, width: '70%' }} />
       </View>
       <View style={styles.cardFooter}>
@@ -36,6 +43,14 @@ function Card({ title, onPress }: { title: string; onPress: () => void }) {
 }
 
 export default function HomeScreen({ navigation }: HomeNavProps<'Home'>) {
+  const dispatch = useDispatch();
+  const giveaway = useSelector((state: RootState) => state.giveaway);
+  const height = useBottomTabBarHeight();
+
+  React.useEffect(() => {
+    dispatch(setTabHeight(height));
+  }, []);
+
   return (
     <SafeArea>
       <ScrollView style={styles.body} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
@@ -43,15 +58,18 @@ export default function HomeScreen({ navigation }: HomeNavProps<'Home'>) {
           <Text style={styles.title}>Giveaways</Text>
         </View>
         <View style={styles.cards}>
-          <Card
-            title="$5 Roblox Gift Card"
-            onPress={() => {
-              navigation.navigate('Giveaway', {
-                id: 'ads',
-                name: 'asd',
-              });
-            }}
-          />
+          {giveaway.giveaways.map((g, i) => (
+            <Card
+              key={i}
+              {...g}
+              onPress={() => {
+                navigation.navigate('Giveaway', {
+                  id: g.id,
+                  name: g.name,
+                });
+              }}
+            />
+          ))}
         </View>
       </ScrollView>
     </SafeArea>

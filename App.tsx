@@ -10,16 +10,16 @@ import Navigation from './navigation';
 import { store } from './store';
 
 export default function App() {
-  const isLoadingComplete = useCachedResources();
+  const { loaded, user, giveaways } = useCachedResources();
   const colorScheme = useColorScheme();
 
-  if (!isLoadingComplete) {
+  if (!loaded) {
     return null;
   } else {
     return (
       <Provider store={store}>
         <SafeAreaProvider>
-          <Navigation colorScheme={colorScheme} />
+          <Navigation colorScheme={colorScheme} user={user} giveaways={giveaways} />
           <StatusBar style="light" />
         </SafeAreaProvider>
       </Provider>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Alert, TextInput, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ChevronLeftIcon } from 'react-native-heroicons/solid';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -9,22 +9,46 @@ import { SafeArea, View, Text, TouchableOpacity, MainStyles, InputStyle, Dismiss
 import { HomeNavProps } from '../types';
 import { RootState } from '../store';
 
-export default function Giveaway({ navigation }: HomeNavProps<'Giveaway'>) {
+import Api from '../utils/api';
+import { setUser } from '../store/reducers/user';
+import { setGiveaway } from '../store/reducers/giveaway';
+
+export default function Giveaway({ navigation, route }: HomeNavProps<'Giveaway'>) {
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
+  const [loading, setLoading] = React.useState(false);
+  const { id, name } = route.params;
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data: { points: string }) => {
+  const onSubmit = async (data: { points: string }) => {
+    if (loading) return;
+
     const points = parseInt(data.points);
     if (points < 1 || points > user.balance) {
       Alert.alert('Error', 'Not enough points');
       return;
     }
 
-    console.log(data.points);
+    setLoading(true);
+    try {
+      const response = await Api.post('/giveaways/join', {
+        id,
+        points,
+      });
+
+      dispatch(setUser(response.data.user));
+      dispatch(setGiveaway(response.data.giveaway));
+      Alert.alert('Success', 'You have entered the giveaway');
+    } catch (err) {
+      Alert.alert('Error', err.response.data.message ?? 'Server Error');
+      console.warn(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,10 +71,8 @@ export default function Giveaway({ navigation }: HomeNavProps<'Giveaway'>) {
 
           <View style={styles.content}>
             <View style={styles.card}>
-              <Text style={{ color: Colors.dark.lightGreen, marginBottom: 15, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>
-                $5 Roblox Gift Card
-              </Text>
-              <Text style={{ marginBottom: 15, fontSize: 24, fontWeight: '600', textAlign: 'center' }}>You have 10 Points</Text>
+              <Text style={{ color: Colors.dark.lightGreen, marginBottom: 10, fontSize: 24, fontWeight: 'bold', textAlign: 'center' }}>{name}</Text>
+              <Text style={{ marginBottom: 15, fontSize: 24, fontWeight: '600', textAlign: 'center' }}>You have {user.balance} Points</Text>
 
               <View style={{ marginBottom: 20 }}>
                 <Controller

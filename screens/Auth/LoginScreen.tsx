@@ -2,19 +2,43 @@ import * as React from 'react';
 import { TextInput, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
 
 import { AuthNavProps } from '../../types';
 import { SafeArea, View, Text, InputStyle, AuthStyles } from '../../components/Theme';
+import Api, { setAuthToken } from '../../utils/api';
+import { login } from '../../store/reducers/user';
 
 export default function LoginScreen({ navigation }: AuthNavProps<'Login'>) {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = React.useState(false);
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data: { email: string; password: string }) => {
-    console.log(data);
+  const onSubmit = async (data: { email: string; password: string }): Promise<void> => {
+    try {
+      if (loading) return;
+
+      const token = await AsyncStorage.getItem('@token');
+      if (token) {
+        await AsyncStorage.removeItem('@token');
+      }
+
+      const response = await Api.post('/auth/login', { ...data });
+      await AsyncStorage.setItem('@token', response.data.token);
+      await setAuthToken(response.data.token);
+
+      dispatch(login(response.data.user));
+    } catch (err) {
+      console.warn(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -64,7 +88,7 @@ export default function LoginScreen({ navigation }: AuthNavProps<'Login'>) {
                 <Text style={{ marginRight: 5, fontSize: 18 }}>Need an account?</Text>
                 <Pressable
                   onPress={() => {
-                    navigation.navigate('Register');
+                    navigation.replace('Register');
                   }}
                 >
                   <Text style={styles.registerText}>Register</Text>

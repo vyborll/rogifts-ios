@@ -4,9 +4,11 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, StackNavigationOptions } from '@react-navigation/stack';
 import * as React from 'react';
+import { useSelector } from 'react-redux';
+import { AdMobBanner } from 'expo-ads-admob';
 
 import { HomeIcon, CurrencyDollarIcon, CogIcon } from 'react-native-heroicons/solid';
 
@@ -19,15 +21,25 @@ import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import { BottomTabParamList, HomeParamList, EarnParamList, TabOneParamList, TabTwoParamList, SettingParamList } from '../types';
+import { RootState } from '../store';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
+const TabBarComponent = (props: any) => <BottomTabBar {...props} />;
+
 export default function BottomTabNavigator() {
   const colorScheme = useColorScheme();
+  const setting = useSelector((state: RootState) => state.giveaway);
 
   return (
     <BottomTab.Navigator
       initialRouteName="Home"
+      tabBar={(props) => (
+        <>
+          <AdMobBanner style={{ bottom: setting.tabBarHeight ?? 0 }} bannerSize="fullBanner" adUnitID="ca-app-pub-3940256099942544/6300978111" />
+          <TabBarComponent {...props} />
+        </>
+      )}
       tabBarOptions={{
         showLabel: false,
         activeTintColor: Colors.dark.green,
@@ -65,20 +77,6 @@ export default function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <CogIcon size={28} color={color} />,
         }}
       />
-      {/* <BottomTab.Screen
-        name="TabOne"
-        component={TabOneNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
-        }}
-      />
-      <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
-        }}
-      /> */}
     </BottomTab.Navigator>
   );
 }

@@ -2,12 +2,14 @@ import * as React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { CogIcon, BookOpenIcon } from 'react-native-heroicons/solid';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Colors from '../constants/Colors';
 import { SafeArea, View, Text, TouchableOpacity } from '../components/Theme';
 import { SettingNavProps } from '../types';
 import { RootState } from '../store';
 import { logout } from '../store/reducers/user';
+import { removeAuthToken } from '../utils/api';
 
 export default function SettingScreen({ navigation }: SettingNavProps<'Setting'>) {
   const dispatch = useDispatch();
@@ -27,7 +29,13 @@ export default function SettingScreen({ navigation }: SettingNavProps<'Setting'>
     {
       title: 'Logout',
       icon: <CogIcon color={Colors.dark.lightRed} />,
-      onPress: () => {
+      onPress: async () => {
+        const token = await AsyncStorage.getItem('@token');
+        if (token) {
+          await AsyncStorage.removeItem('@token');
+        }
+
+        await removeAuthToken();
         dispatch(logout());
       },
     },
@@ -54,11 +62,11 @@ export default function SettingScreen({ navigation }: SettingNavProps<'Setting'>
 
         <View style={{ flexDirection: 'row' }}>
           <View style={{ ...styles.box, flex: 1, justifyContent: 'center', alignItems: 'center', marginRight: 5 }}>
-            <Text style={styles.statTitle}>0</Text>
+            <Text style={styles.statTitle}>{user.spent}</Text>
             <Text>Entries</Text>
           </View>
           <View style={{ ...styles.box, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={styles.statTitle}>0</Text>
+            <Text style={styles.statTitle}>{user.winnings}</Text>
             <Text>Winnings</Text>
           </View>
         </View>
