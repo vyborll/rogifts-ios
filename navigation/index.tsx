@@ -16,7 +16,7 @@ import Giveaway from '../screens/Giveaway';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import EditSettingsScreen from '../screens/Settings/EditSettingsScreen';
-import RulesScreen from '../screens/Settings/RulesScreen';
+import FaqScreen from '../screens/Settings/FaqScreen';
 import { RootStackParamList } from '../types';
 import BottomTabNavigator from './BottomTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
@@ -75,7 +75,7 @@ function RootNavigator() {
           <Stack.Screen name="Root" component={BottomTabNavigator} />
           <Stack.Screen name="Giveaway" component={Giveaway} />
           <Stack.Screen name="EditSettings" component={EditSettingsScreen} />
-          <Stack.Screen name="Rules" component={RulesScreen} />
+          <Stack.Screen name="FAQ" component={FaqScreen} />
           <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
         </>
       ) : (

@@ -1,15 +1,16 @@
 import * as React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { CogIcon, BookOpenIcon } from 'react-native-heroicons/solid';
+import { CogIcon, BookOpenIcon, BookmarkIcon, TrashIcon } from 'react-native-heroicons/solid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as WebBrowser from 'expo-web-browser';
 
 import Colors from '../constants/Colors';
 import { SafeArea, View, Text, TouchableOpacity } from '../components/Theme';
 import { SettingNavProps } from '../types';
 import { RootState } from '../store';
 import { logout } from '../store/reducers/user';
-import { removeAuthToken } from '../utils/api';
+import Api, { removeAuthToken } from '../utils/api';
 
 export default function SettingScreen({ navigation }: SettingNavProps<'Setting'>) {
   const dispatch = useDispatch();
@@ -22,9 +23,43 @@ export default function SettingScreen({ navigation }: SettingNavProps<'Setting'>
       onPress: () => navigation.push('EditSettings'),
     },
     {
-      title: 'Rules',
+      title: 'FAQ',
       icon: <BookOpenIcon color={Colors.dark.lightGreen} />,
-      onPress: () => navigation.push('Rules'),
+      onPress: () => navigation.push('FAQ'),
+    },
+    {
+      title: 'Privacy Policy',
+      icon: <BookmarkIcon color={Colors.dark.lightGreen} />,
+      onPress: async () => await WebBrowser.openBrowserAsync('http://localhost:3000/privacy'),
+    },
+    {
+      title: 'Delete Account',
+      icon: <TrashIcon color={Colors.dark.lightRed} />,
+      onPress: () =>
+        Alert.alert(
+          'Delete Account',
+          'Are you sure you want to delete your account?',
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel',
+            },
+            {
+              text: 'Confirm',
+              onPress: async () => {
+                try {
+                  await Api.post('/user/delete');
+                  await removeAuthToken();
+                  await AsyncStorage.removeItem('@token');
+                  dispatch(logout());
+                } catch (err) {
+                  Alert.alert('Error', err.response.data.message ?? 'Error deleting account. Please contact an owner on our discord!');
+                }
+              },
+            },
+          ],
+          { cancelable: true }
+        ),
     },
     {
       title: 'Logout',
@@ -43,7 +78,12 @@ export default function SettingScreen({ navigation }: SettingNavProps<'Setting'>
 
   return (
     <SafeArea>
-      <View style={styles.body}>
+      <ScrollView
+        style={styles.body}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <Text style={styles.title}>Settings</Text>
         </View>
@@ -71,17 +111,23 @@ export default function SettingScreen({ navigation }: SettingNavProps<'Setting'>
           </View>
         </View>
 
-        <ScrollView style={{ height: '100%' }} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+        <View>
           {actions.map((action, index) => (
             <TouchableOpacity key={index} style={styles.action} onPress={action.onPress}>
-              <Text style={action.title === 'Logout' ? { ...styles.actionTitle, color: Colors.dark.lightRed } : styles.actionTitle}>
+              <Text
+                style={
+                  action.title === 'Logout' || action.title === 'Delete Account'
+                    ? { ...styles.actionTitle, color: Colors.dark.lightRed }
+                    : styles.actionTitle
+                }
+              >
                 {action.title}
               </Text>
               {action.icon}
             </TouchableOpacity>
           ))}
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
     </SafeArea>
   );
 }

@@ -28,7 +28,7 @@ const initialState = {
   spent: 0,
   frozen: false,
   winnings: 0,
-  discord: true,
+  discord: false,
 } as UserState;
 
 const userSlice = createSlice({

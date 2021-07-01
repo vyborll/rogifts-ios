@@ -1,11 +1,13 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { store } from '../store/index';
+import { logout } from '../store/reducers/user';
 
 const DEV_URL = 'http://localhost:3000/api';
 const PROD_URL = 'http://api.rogifts.com/api';
 
 const api = axios.create({
-  baseURL: DEV_URL,
+  baseURL: PROD_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -13,10 +15,15 @@ const api = axios.create({
 
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
+  async (err) => {
     if (err.response?.status === 401) {
-      // Logout
-      // store.dispatch(logout());
+      const token = await AsyncStorage.getItem('@token');
+      if (token) {
+        await AsyncStorage.removeItem('@token');
+      }
+
+      await removeAuthToken();
+      store.dispatch(logout());
     }
 
     return Promise.reject(err);

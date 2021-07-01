@@ -15,7 +15,7 @@ export type RootStackParamList = {
   Earn: undefined;
   Setting: undefined;
   EditSettings: undefined;
-  Rules: undefined;
+  FAQ: undefined;
   Root: undefined;
   NotFound: undefined;
 };
@@ -52,7 +52,7 @@ export type EarnParamList = {
 export type SettingParamList = {
   Setting: undefined;
   EditSettings: undefined;
-  Rules: undefined;
+  FAQ: undefined;
 };
 
 export type TabOneParamList = {

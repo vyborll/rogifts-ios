@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Image, StyleSheet, ScrollView } from 'react-native';
+import { RefreshControl, Image, StyleSheet, ScrollView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import moment from 'moment-timezone';
@@ -12,7 +12,8 @@ import { HomeNavProps } from '../types';
 // @ts-ignore
 import robloxIcon from '../assets/images/roblox-icon.png';
 import { RootState } from '../store';
-import { GiveawayData, setTabHeight } from '../store/reducers/giveaway';
+import { GiveawayData, setGiveaways, setTabHeight } from '../store/reducers/giveaway';
+import Api from '../utils/api';
 
 function Card({ name, usersEntered, maxEntries, endAt, onPress }: GiveawayData & { onPress: () => void }) {
   return (
@@ -46,14 +47,34 @@ export default function HomeScreen({ navigation }: HomeNavProps<'Home'>) {
   const dispatch = useDispatch();
   const giveaway = useSelector((state: RootState) => state.giveaway);
   const height = useBottomTabBarHeight();
+  const [refreshing, setRefreshing] = React.useState(false);
 
   React.useEffect(() => {
     dispatch(setTabHeight(height));
   }, []);
 
+  const onRefresh = React.useCallback(async () => {
+    if (refreshing) return;
+
+    try {
+      setRefreshing(true);
+      const response = await Api.get('/giveaways/get');
+      dispatch(setGiveaways(response.data.giveaways));
+    } catch (err) {
+      console.warn(err);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshing]);
+
   return (
     <SafeArea>
-      <ScrollView style={styles.body} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.body}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.dark.text} />}
+      >
         <View style={styles.header}>
           <Text style={styles.title}>Giveaways</Text>
         </View>

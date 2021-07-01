@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import * as linking from 'expo-linking';
 import { AdMobRewarded } from 'expo-ads-admob';
@@ -28,6 +28,7 @@ export default function EarnScreen() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
   const [playing, setPlaying] = React.useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const tasks: Task[] = [
     {
@@ -39,6 +40,20 @@ export default function EarnScreen() {
       reward: 1,
     },
   ];
+
+  const onRefresh = React.useCallback(async () => {
+    if (refreshing) return;
+
+    try {
+      setRefreshing(true);
+      const response = await Api.get('/user/me');
+      dispatch(setUser(response.data.user));
+    } catch (err) {
+      console.warn(err);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshing]);
 
   const playVideoAd = async () => {
     try {
@@ -65,7 +80,12 @@ export default function EarnScreen() {
 
   return (
     <SafeArea>
-      <View style={styles.body}>
+      <ScrollView
+        style={styles.body}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.dark.text} />}
+      >
         <View style={styles.header}>
           <Text style={styles.title}>Earn</Text>
         </View>
@@ -93,7 +113,7 @@ export default function EarnScreen() {
             }}
           />
         </View>
-      </View>
+      </ScrollView>
     </SafeArea>
   );
 }
